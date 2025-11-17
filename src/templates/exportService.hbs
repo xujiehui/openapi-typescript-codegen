@@ -134,6 +134,17 @@ export class {{{name}}}{{{@root.postfix}}} {
 			{{#if parametersBody.mediaType}}
 			mediaType: '{{{parametersBody.mediaType}}}',
 			{{/if}}
+			{{else}}
+			{{#if parametersBodyExpanded}}
+			body: {
+				{{#each parametersBodyExpanded}}
+				'{{{prop}}}': {{{name}}},
+				{{/each}}
+			},
+			{{#if parametersBodyExpanded.0.mediaType}}
+			mediaType: '{{{parametersBodyExpanded.0.mediaType}}}',
+			{{/if}}
+			{{/if}}
 			{{/if}}
 			{{#if responseHeader}}
 			responseHeader: '{{{responseHeader}}}',

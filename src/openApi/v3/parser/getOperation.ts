@@ -1,10 +1,15 @@
 import type { Operation } from '../../../client/interfaces/Operation';
+import type { OperationParameter } from '../../../client/interfaces/OperationParameter';
 import type { OperationParameters } from '../../../client/interfaces/OperationParameters';
 import type { OpenApi } from '../interfaces/OpenApi';
 import type { OpenApiOperation } from '../interfaces/OpenApiOperation';
 import type { OpenApiRequestBody } from '../interfaces/OpenApiRequestBody';
+import type { OpenApiSchema } from '../interfaces/OpenApiSchema';
+import { getContent } from './getContent';
+import { getModel } from './getModel';
 import { getOperationErrors } from './getOperationErrors';
 import { getOperationName } from './getOperationName';
+import { getOperationParameterName } from './getOperationParameterName';
 import { getOperationParameters } from './getOperationParameters';
 import { getOperationRequestBody } from './getOperationRequestBody';
 import { getOperationResponseHeader } from './getOperationResponseHeader';
@@ -41,6 +46,7 @@ export const getOperation = (
         parametersHeader: [...pathParams.parametersHeader],
         parametersCookie: [...pathParams.parametersCookie],
         parametersBody: pathParams.parametersBody,
+        parametersBodyExpanded: [...pathParams.parametersBodyExpanded],
         imports: [],
         errors: [],
         results: [],
@@ -63,9 +69,77 @@ export const getOperation = (
     if (op.requestBody) {
         const requestBodyDef = getRef<OpenApiRequestBody>(openApi, op.requestBody);
         const requestBody = getOperationRequestBody(openApi, requestBodyDef);
-        operation.imports.push(...requestBody.imports);
-        operation.parameters.push(requestBody);
-        operation.parametersBody = requestBody;
+        
+        // Check if requestBody has a schema reference that should be expanded
+        if (requestBodyDef.content) {
+            const content = getContent(openApi, requestBodyDef.content);
+            if (content && content.schema.$ref && requestBody.mediaType === 'application/json') {
+                // Expand schema properties into individual parameters
+                const resolvedSchema = getRef<OpenApiSchema>(openApi, content.schema);
+                const model = getModel(openApi, resolvedSchema);
+                
+                if (model.properties && model.properties.length > 0) {
+                    // Expand properties as body parameters
+                    const expandedParameters: OperationParameter[] = [];
+                    model.properties.forEach(property => {
+                        const expandedParameter: OperationParameter = {
+                            in: 'body',
+                            prop: property.name,
+                            export: property.export,
+                            name: getOperationParameterName(property.name),
+                            type: property.type,
+                            base: property.base,
+                            template: property.template,
+                            link: property.link,
+                            description: property.description,
+                            deprecated: property.deprecated,
+                            isDefinition: false,
+                            isReadOnly: property.isReadOnly,
+                            isRequired: property.isRequired,
+                            isNullable: property.isNullable,
+                            format: property.format,
+                            maximum: property.maximum,
+                            exclusiveMaximum: property.exclusiveMaximum,
+                            minimum: property.minimum,
+                            exclusiveMinimum: property.exclusiveMinimum,
+                            multipleOf: property.multipleOf,
+                            maxLength: property.maxLength,
+                            minLength: property.minLength,
+                            maxItems: property.maxItems,
+                            minItems: property.minItems,
+                            uniqueItems: property.uniqueItems,
+                            maxProperties: property.maxProperties,
+                            minProperties: property.minProperties,
+                            pattern: property.pattern,
+                            default: property.default,
+                            imports: property.imports,
+                            enum: property.enum,
+                            enums: property.enums,
+                            properties: property.properties,
+                            mediaType: requestBody.mediaType,
+                        };
+                        expandedParameters.push(expandedParameter);
+                        operation.parameters.push(expandedParameter);
+                        operation.imports.push(...expandedParameter.imports);
+                    });
+                    // Store expanded parameters and set parametersBody to null
+                    operation.parametersBodyExpanded = expandedParameters;
+                    operation.parametersBody = null;
+                } else {
+                    // No properties to expand, use original requestBody
+                    operation.parameters.push(requestBody);
+                    operation.parametersBody = requestBody;
+                }
+            } else {
+                // Not a schema reference or not JSON, use original requestBody
+                operation.parameters.push(requestBody);
+                operation.parametersBody = requestBody;
+            }
+        } else {
+            // No content, use original requestBody
+            operation.parameters.push(requestBody);
+            operation.parametersBody = requestBody;
+        }
     }
 
     // Parse the operation responses.

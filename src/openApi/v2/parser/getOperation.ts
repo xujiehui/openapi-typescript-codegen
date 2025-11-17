@@ -38,6 +38,7 @@ export const getOperation = (
         parametersHeader: [...pathParams.parametersHeader],
         parametersCookie: [...pathParams.parametersCookie],
         parametersBody: pathParams.parametersBody,
+        parametersBodyExpanded: [...pathParams.parametersBodyExpanded],
         imports: [],
         errors: [],
         results: [],
