@@ -26,9 +26,11 @@ import { BaseHttpRequest } from '../core/BaseHttpRequest';
 {{else}}
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 {{/equals}}
+import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 {{else}}
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
+import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 {{/if}}
 
 {{#equals @root.httpClient 'angular'}}
@@ -65,6 +67,7 @@ export class {{{name}}}{{{@root.postfix}}} {
 	{{/each}}
 	{{/if}}
 	{{/unless}}
+	 * @param options 自定义扩展参数，用于覆盖或扩展请求选项
 	{{#each results}}
 	 * @returns {{{type}}} {{#if description}}{{{escapeComment description}}}{{/if}}
 	{{/each}}
@@ -156,6 +159,7 @@ export class {{{name}}}{{{@root.postfix}}} {
 				{{/each}}
 			},
 			{{/if}}
+			...(options || {}),
 		});
 	}
 

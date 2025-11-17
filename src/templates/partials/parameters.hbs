@@ -18,11 +18,24 @@
 {{/ifdef}}
 {{{name}}}{{>isRequired}}: {{>type}},
 {{/each}}
-}
+},
+/**
+ * 自定义扩展参数，用于覆盖或扩展请求选项
+ */
+options?: Partial<ApiRequestOptions>
 {{~else}}
 
 {{#each parameters}}
 {{{name}}}{{>isRequired}}: {{>type}}{{#if default}} = {{{default}}}{{/if}},
 {{/each}}
+/**
+ * 自定义扩展参数，用于覆盖或扩展请求选项
+ */
+options?: Partial<ApiRequestOptions>,
 {{/if}}
+{{else}}
+/**
+ * 自定义扩展参数，用于覆盖或扩展请求选项
+ */
+options: Partial<ApiRequestOptions>,
 {{/if}}
