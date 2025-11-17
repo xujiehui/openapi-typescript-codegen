@@ -1,6 +1,6 @@
 {
-    "name": "@own/openapi-typescript-codegen",
-    "version": "0.0.1",
+    "name": "@owndo/openapi-typescript-codegen",
+    "version": "0.0.2",
     "description": "Fork of: https://github.com/ferdikoomen/openapi-typescript-codegen. Library that generates Typescript clients based on the OpenAPI specification.",
     "author": "Endless",
     "homepage": "https://github.com/xujiehui/openapi-typescript-codegen",
@@ -12,6 +12,10 @@
         "url": "https://github.com/xujiehui/openapi-typescript-codegen/issues"
     },
     "license": "MIT",
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
     "keywords": [
         "openapi",
         "swagger",

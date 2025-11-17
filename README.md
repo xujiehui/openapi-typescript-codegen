@@ -19,7 +19,7 @@
 ## 安装
 
 ```bash
-npm install @own/openapi-typescript-codegen --save-dev
+npm install @owndo/openapi-typescript-codegen --save-dev
 ```
 
 ## 使用方法
@@ -58,7 +58,7 @@ $ openapi --help
 ### Node.js API
 
 ```typescript
-import { generate, HttpClient } from '@own/openapi-typescript-codegen';
+import { generate, HttpClient } from '@owndo/openapi-typescript-codegen';
 
 await generate({
     input: './spec.json',
@@ -104,7 +104,7 @@ await generate({
 ### 项目配置变更
 
 1. **包名和仓库**
-   - 包名从 `openapi-typescript-codegen` 变更为 `@own/openapi-typescript-codegen`
+   - 包名从 `openapi-typescript-codegen` 变更为 `@owndo/openapi-typescript-codegen`
    - 仓库地址更新为 [xujiehui/openapi-typescript-codegen](https://github.com/xujiehui/openapi-typescript-codegen)
 
 2. **版本信息**
@@ -122,12 +122,12 @@ await generate({
 npm install openapi-typescript-codegen --save-dev
 
 # Fork 版本
-npm install @own/openapi-typescript-codegen --save-dev
+npm install @owndo/openapi-typescript-codegen --save-dev
 ```
 
 ## 项目信息
 
-- **包名**: `@own/openapi-typescript-codegen`
+- **包名**: `@owndo/openapi-typescript-codegen`
 - **版本**: 0.0.1
 - **许可证**: MIT
 - **仓库**: [GitHub](https://github.com/xujiehui/openapi-typescript-codegen)

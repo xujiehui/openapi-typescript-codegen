@@ -81,12 +81,26 @@ export const getOperation = (
                 if (model.properties && model.properties.length > 0) {
                     // Expand properties as body parameters
                     const expandedParameters: OperationParameter[] = [];
+                    // Track parameter names to avoid duplicates with existing parameters
+                    const existingParameterNames = new Set(
+                        operation.parameters.map(p => p.name)
+                    );
+                    
                     model.properties.forEach(property => {
+                        const parameterName = getOperationParameterName(property.name);
+                        
+                        // Skip if parameter name already exists
+                        if (existingParameterNames.has(parameterName)) {
+                            return;
+                        }
+                        
+                        existingParameterNames.add(parameterName);
+                        
                         const expandedParameter: OperationParameter = {
                             in: 'body',
                             prop: property.name,
                             export: property.export,
-                            name: getOperationParameterName(property.name),
+                            name: parameterName,
                             type: property.type,
                             base: property.base,
                             template: property.template,

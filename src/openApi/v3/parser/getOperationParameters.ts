@@ -86,6 +86,24 @@ export const getOperationParameters = (openApi: OpenApi, parameters: OpenApiPara
         parametersBodyExpanded: [],
     };
 
+    // Track parameter names to avoid duplicates
+    const parameterNames = new Set<string>();
+
+    // Helper function to add parameter if not duplicate
+    const addParameterIfNotDuplicate = (
+        param: OperationParameter,
+        targetArray: OperationParameter[]
+    ): boolean => {
+        if (parameterNames.has(param.name)) {
+            return false; // Skip duplicate
+        }
+        parameterNames.add(param.name);
+        targetArray.push(param);
+        operationParameters.parameters.push(param);
+        operationParameters.imports.push(...param.imports);
+        return true;
+    };
+
     // Iterate over the parameters
     parameters.forEach(parameterOrReference => {
         const parameterDef = getRef<OpenApiParameter>(openApi, parameterOrReference);
@@ -96,9 +114,9 @@ export const getOperationParameters = (openApi: OpenApi, parameters: OpenApiPara
         if (parameter.prop !== 'api-version') {
             switch (parameterDef.in) {
                 case 'path':
-                    operationParameters.parametersPath.push(parameter);
-                    operationParameters.parameters.push(parameter);
-                    operationParameters.imports.push(...parameter.imports);
+                    if (addParameterIfNotDuplicate(parameter, operationParameters.parametersPath)) {
+                        // Parameter added successfully
+                    }
                     break;
 
                 case 'query':
@@ -106,14 +124,10 @@ export const getOperationParameters = (openApi: OpenApi, parameters: OpenApiPara
                     if (parameterDef.schema?.$ref) {
                         const expandedParams = expandSchemaProperties(openApi, parameterDef.schema, 'query');
                         expandedParams.forEach(expandedParam => {
-                            operationParameters.parametersQuery.push(expandedParam);
-                            operationParameters.parameters.push(expandedParam);
-                            operationParameters.imports.push(...expandedParam.imports);
+                            addParameterIfNotDuplicate(expandedParam, operationParameters.parametersQuery);
                         });
                     } else {
-                        operationParameters.parametersQuery.push(parameter);
-                        operationParameters.parameters.push(parameter);
-                        operationParameters.imports.push(...parameter.imports);
+                        addParameterIfNotDuplicate(parameter, operationParameters.parametersQuery);
                     }
                     break;
 
@@ -122,27 +136,19 @@ export const getOperationParameters = (openApi: OpenApi, parameters: OpenApiPara
                     if (parameterDef.schema?.$ref) {
                         const expandedParams = expandSchemaProperties(openApi, parameterDef.schema, 'formData');
                         expandedParams.forEach(expandedParam => {
-                            operationParameters.parametersForm.push(expandedParam);
-                            operationParameters.parameters.push(expandedParam);
-                            operationParameters.imports.push(...expandedParam.imports);
+                            addParameterIfNotDuplicate(expandedParam, operationParameters.parametersForm);
                         });
                     } else {
-                        operationParameters.parametersForm.push(parameter);
-                        operationParameters.parameters.push(parameter);
-                        operationParameters.imports.push(...parameter.imports);
+                        addParameterIfNotDuplicate(parameter, operationParameters.parametersForm);
                     }
                     break;
 
                 case 'cookie':
-                    operationParameters.parametersCookie.push(parameter);
-                    operationParameters.parameters.push(parameter);
-                    operationParameters.imports.push(...parameter.imports);
+                    addParameterIfNotDuplicate(parameter, operationParameters.parametersCookie);
                     break;
 
                 case 'header':
-                    operationParameters.parametersHeader.push(parameter);
-                    operationParameters.parameters.push(parameter);
-                    operationParameters.imports.push(...parameter.imports);
+                    addParameterIfNotDuplicate(parameter, operationParameters.parametersHeader);
                     break;
             }
         }
