@@ -15,6 +15,7 @@ import { sortServicesByName } from './sortServicesByName';
  * @param templates The loaded handlebar templates
  * @param outputPath Directory to write the generated files to
  * @param useUnionTypes Use union types instead of enums
+ * @param useNamedExports Use named function exports instead of class static methods
  * @param exportCore Generate core
  * @param exportServices Generate services
  * @param exportModels Generate models
@@ -28,6 +29,7 @@ export const writeClientIndex = async (
     templates: Templates,
     outputPath: string,
     useUnionTypes: boolean,
+    useNamedExports: boolean,
     exportCore: boolean,
     exportServices: boolean,
     exportModels: boolean,
@@ -42,6 +44,7 @@ export const writeClientIndex = async (
         exportModels,
         exportSchemas,
         useUnionTypes,
+        useNamedExports,
         postfixServices,
         postfixModels,
         clientName,

@@ -22,6 +22,7 @@ import { writeClientServices } from './writeClientServices';
  * @param httpClient The selected httpClient (fetch, xhr, node or axios)
  * @param useOptions Use options or arguments functions
  * @param useUnionTypes Use union types instead of enums
+ * @param useNamedExports Use named function exports instead of class static methods
  * @param exportCore Generate core client classes
  * @param exportServices Generate services
  * @param exportModels Generate models
@@ -40,6 +41,7 @@ export const writeClient = async (
     httpClient: HttpClient,
     useOptions: boolean,
     useUnionTypes: boolean,
+    useNamedExports: boolean,
     exportCore: boolean,
     exportServices: boolean,
     exportModels: boolean,
@@ -76,6 +78,7 @@ export const writeClient = async (
             httpClient,
             useUnionTypes,
             useOptions,
+            useNamedExports,
             indent,
             postfixServices,
             clientName
@@ -106,6 +109,7 @@ export const writeClient = async (
             templates,
             outputPath,
             useUnionTypes,
+            useNamedExports,
             exportCore,
             exportServices,
             exportModels,

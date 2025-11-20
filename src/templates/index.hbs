@@ -41,7 +41,15 @@ export { ${{{name}}} } from './schemas/${{{name}}}';
 {{#if services}}
 
 {{#each services}}
+{{#if @root.useNamedExports}}
+{{#unless @root.exportClient}}
+export * from './services/{{{name}}}{{{@root.postfixServices}}}';
+{{else}}
 export { {{{name}}}{{{@root.postfixServices}}} } from './services/{{{name}}}{{{@root.postfixServices}}}';
+{{/unless}}
+{{else}}
+export { {{{name}}}{{{@root.postfixServices}}} } from './services/{{{name}}}{{{@root.postfixServices}}}';
+{{/if}}
 {{/each}}
 {{/if}}
 {{/if}}

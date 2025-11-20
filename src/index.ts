@@ -19,6 +19,7 @@ export type Options = {
     clientName?: string;
     useOptions?: boolean;
     useUnionTypes?: boolean;
+    useNamedExports?: boolean;
     exportCore?: boolean;
     exportServices?: boolean;
     exportModels?: boolean;
@@ -40,6 +41,7 @@ export type Options = {
  * @param clientName Custom client class name
  * @param useOptions Use options or arguments functions
  * @param useUnionTypes Use union types instead of enums
+ * @param useNamedExports Use named function exports instead of class static methods (better for tree-shaking)
  * @param exportCore Generate core client classes
  * @param exportServices Generate services
  * @param exportModels Generate models
@@ -57,6 +59,7 @@ export const generate = async ({
     clientName,
     useOptions = false,
     useUnionTypes = false,
+    useNamedExports = false,
     exportCore = true,
     exportServices = true,
     exportModels = true,
@@ -87,6 +90,7 @@ export const generate = async ({
                 httpClient,
                 useOptions,
                 useUnionTypes,
+                useNamedExports,
                 exportCore,
                 exportServices,
                 exportModels,
@@ -111,6 +115,7 @@ export const generate = async ({
                 httpClient,
                 useOptions,
                 useUnionTypes,
+                useNamedExports,
                 exportCore,
                 exportServices,
                 exportModels,
