@@ -17,10 +17,13 @@ export const getOperation = (
     method: string,
     tag: string,
     op: OpenApiOperation,
-    pathParams: OperationParameters
+    pathParams: OperationParameters,
+    transformOperationName?: (url: string, method: string, operationId?: string) => string
 ): Operation => {
     const serviceName = getServiceName(tag);
-    const operationName = getOperationName(url, method, op.operationId);
+    const operationName = transformOperationName 
+        ? transformOperationName(url, method, op.operationId)
+        : getOperationName(url, method, op.operationId);
 
     // Create a new operation object for this method.
     const operation: Operation = {

@@ -74,6 +74,14 @@ await generate({
     indent: '4',
     postfixServices: 'Service',
     postfixModels: '',
+    // 自定义操作名称转换函数（可选）
+    transformOperationName: (url: string, method: string, operationId?: string) => {
+        // 自定义逻辑：例如使用 operationId 或组合 url 和 method
+        if (operationId) {
+            return operationId;
+        }
+        return `${method.toUpperCase()}_${url.replace(/\//g, '_').replace(/[{}]/g, '')}`;
+    },
 });
 ```
 
@@ -101,6 +109,12 @@ await generate({
    - 改进了 query 和 formData 参数的处理逻辑，支持 schema 引用的自动展开
    - 增强了 requestBody 的处理，支持将复杂 schema 展开为多个参数
 
+3. **操作名称自定义转换功能**
+   - 新增 `transformOperationName` 选项，允许自定义操作名称的生成逻辑
+   - 支持根据 URL、HTTP 方法和 operationId 自定义生成操作名称
+   - 适用于 OpenAPI v2.0 和 v3.0 规范
+   - 可通过 Node.js API 使用（CLI 暂不支持函数参数）
+
 ### 项目配置变更
 
 1. **包名和仓库**
@@ -114,6 +128,35 @@ await generate({
 ### 使用说明
 
 这些改动向后兼容，不会影响现有功能。新增的 schema 展开功能会在检测到 schema 引用时自动启用，无需额外配置。
+
+#### transformOperationName 使用示例
+
+`transformOperationName` 函数接收三个参数：
+- `url`: API 路径（例如：`/api/users/{id}`）
+- `method`: HTTP 方法（例如：`get`, `post`, `put`）
+- `operationId`: OpenAPI 规范中定义的 operationId（可选）
+
+函数应返回一个字符串作为生成的操作名称。如果不提供此函数，将使用默认的命名规则。
+
+```typescript
+// 示例 1: 使用 operationId（如果存在）
+transformOperationName: (url, method, operationId) => {
+    return operationId || `${method}${url.split('/').pop()}`;
+}
+
+// 示例 2: 自定义命名规则
+transformOperationName: (url, method, operationId) => {
+    const pathParts = url.split('/').filter(Boolean);
+    const resource = pathParts[pathParts.length - 1] || 'default';
+    return `${method.toUpperCase()}_${resource}`;
+}
+
+// 示例 3: 移除路径参数并格式化
+transformOperationName: (url, method, operationId) => {
+    const cleanUrl = url.replace(/\{[^}]+\}/g, '').replace(/\//g, '_');
+    return `${method}_${cleanUrl}`.replace(/^_|_$/g, '');
+}
+```
 
 如果你需要从原始仓库迁移到本 fork 版本，只需更改包名即可：
 

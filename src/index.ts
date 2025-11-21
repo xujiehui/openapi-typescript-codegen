@@ -29,6 +29,7 @@ export type Options = {
     postfixModels?: string;
     request?: string;
     write?: boolean;
+    transformOperationName?: (url: string, method: string, operationId?: string) => string;
 };
 
 /**
@@ -51,6 +52,7 @@ export type Options = {
  * @param postfixModels Model name postfix
  * @param request Path to custom request file
  * @param write Write the files to disk (true or false)
+ * @param transformOperationName Custom function to transform operation names
  */
 export const generate = async ({
     input,
@@ -69,6 +71,7 @@ export const generate = async ({
     postfixModels = '',
     request,
     write = true,
+    transformOperationName,
 }: Options): Promise<void> => {
     const openApi = isString(input) ? await getOpenApiSpec(input) : input;
     const openApiVersion = getOpenApiVersion(openApi);
@@ -80,7 +83,7 @@ export const generate = async ({
 
     switch (openApiVersion) {
         case OpenApiVersion.V2: {
-            const client = parseV2(openApi);
+            const client = parseV2(openApi, transformOperationName);
             const clientFinal = postProcessClient(client);
             if (!write) break;
             await writeClient(
@@ -105,7 +108,7 @@ export const generate = async ({
         }
 
         case OpenApiVersion.V3: {
-            const client = parseV3(openApi);
+            const client = parseV3(openApi, transformOperationName);
             const clientFinal = postProcessClient(client);
             if (!write) break;
             await writeClient(
